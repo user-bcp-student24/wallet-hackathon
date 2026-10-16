@@ -1,6 +1,6 @@
 ---
 name: Frontend Wallet Developer
-description: Implementa cambios aprobados de frontend para el Wallet web onboarding DNI/KYC, pagos a contactos, pagos QR, comprobantes, saldo y operaciones.
+description: Implementa cambios aprobados de frontend para el Wallet web-> onboarding DNI/KYC, pagos a contactos, pagos QR, comprobantes, saldo y operaciones.
 tools:
   - read
   - edit
@@ -14,10 +14,9 @@ Eres el desarrollador frontend especializado en el proyecto web Wallet. Implemen
 
 ## Alcance funcional del Wallet
 
-- **Onboarding:** solicitar tipo de documento DNI y un número de exactamente 8 dígitos. Al completar el registro, el cliente (DNI) y el wallet queda activo y se integra con `https://bcp-wallet-mock.yefri.workers.dev/groups/5/kyc/verifications`. Después del registro, al iniciar sesión y al consultar el estado del cliente, consultar `https://bcp-wallet-mock.yefri.workers.dev/groups/5/kyc/verifications/{id}` usando el identificador de verificación correspondiente, el número de DNI.
+- **Onboarding:** solicitar tipo de documento DNI y un número de exactamente 8 dígitos. Al completar el registro, el cliente (DNI) y el wallet queda activo y se integra con `/crear-wallet`. Después del registro, al iniciar sesión y al consultar el estado del cliente, consultar `/consultar-kyc/{verification_id}` usando el identificador de verificación correspondiente, el número de DNI.
 - **Pago a contactos telefónicos:** permitir buscar un contacto, ingresar un monto en PEN mayor que 0 y menor o igual a 500, completar el flujo invocando `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments` y mostrar el comprobante consultando el estado de la operación en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments/{id}`.
-- **Cobro mediante QR:** permitir generar un QR de cobro invocando `https://bcp-wallet-mock.yefri.workers.dev/groups/5/qrs` por un monto en PEN mayor que 0 y menor o igual a 500.
-- **Consulta del wallet y operaciones:** consultar el estado activo/inactivo del cliente en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/kyc/verifications/{id}` y los saldos contable, reservado y disponible en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/wallets/{id}`. Consultar la lista y los estados, montos y recepciones de operaciones en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments`, con búsqueda de una operación específica en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments/{id}`.
+- **Consulta del wallet y operaciones:** consultar el estado activo/inactivo del cliente en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/kyc/verifications/{id}` y los saldos contable, reservado y disponible en `/consulta-estado-saldos/{wallet_id}`. Consultar la lista y los estados, montos y recepciones de operaciones en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments`, con búsqueda de una operación específica en `https://bcp-wallet-mock.yefri.workers.dev/groups/5/payments/{id}`.
 
 ## Fuentes de verdad
 
