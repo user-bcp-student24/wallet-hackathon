@@ -17,9 +17,15 @@ services:
       retries: 10
 
   wallet-services:
-    profiles:
-      - app
     build:
+<<<<<<< HEAD
+      context: ./wallet-services/backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      W1_BASE_URL: ${W1_BASE_URL:-https://bcp-wallet-mock.yefri.workers.dev/groups/5}
+      W1_KYC_URL: ${W1_KYC_URL:-https://bcp-wallet-mock.yefri.workers.dev/groups/5/kyc/verifications}
+=======
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
@@ -31,19 +37,11 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-wallet_local_dev}
       PORT: 5000
       HOST: 0.0.0.0
+>>>>>>> 7441c56af21d5d8f0a86309f377c4c4a0d5be5d1
     depends_on:
       - wallet-db
     ports:
       - "127.0.0.1:5000:5000"
-    healthcheck:
-      test:
-        - CMD
-        - python
-        - -c
-        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=2)"
-      interval: 10s
-      timeout: 3s
-      retries: 5
 
   wallet-front:
     profiles:
