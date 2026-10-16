@@ -20,8 +20,8 @@ services:
     profiles:
       - app
     build:
-      context: .
-      dockerfile: infra/wallet-services.Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       DB_HOST: wallet-db
@@ -30,6 +30,7 @@ services:
       DB_USER: ${POSTGRES_USER:-wallet}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-wallet_local_dev}
       PORT: 5000
+      HOST: 0.0.0.0
     depends_on:
       - wallet-db
     ports:
@@ -54,7 +55,7 @@ services:
     depends_on:
       - wallet-services
     ports:
-      - "127.0.0.1:5173:5173"
+      - "127.0.0.1:5173:80"
 
 volumes:
   wallet-db-data:

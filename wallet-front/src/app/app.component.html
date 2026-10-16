@@ -1,0 +1,268 @@
+@if (signedIn) {
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#" (click)="$event.preventDefault(); goTo('home')" aria-label="Plata, ir al inicio">
+      <span class="brand-symbol"><span></span><span></span></span>
+      <span>plata<span class="brand-period">.</span></span>
+    </a>
+    <div class="profile-card">
+      <div class="avatar avatar-profile">VC</div>
+      <div class="profile-copy">
+        <strong>{{ customerName }}</strong>
+        <span><i class="status-dot"></i> Wallet {{ walletActive ? 'activo' : 'inactivo' }}</span>
+      </div>
+      <span class="profile-menu" aria-hidden="true">•••</span>
+    </div>
+    <nav aria-label="Menú principal">
+      @for (group of ['Principal', 'Tu cuenta']; track group) {
+        <p class="nav-heading">{{ group }}</p>
+        @for (item of navigation; track item.id) {
+          @if (item.group === group) {
+            <button class="nav-item" [class.active]="page === item.id" (click)="goTo(item.id)">
+              <span class="nav-icon">{{ item.icon }}</span><span>{{ item.label }}</span>
+              @if (item.id === 'operations') { <span class="nav-count">4</span> }
+            </button>
+          }
+        }
+      }
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <span class="help-icon">?</span>
+        <div><strong>¿Necesitas ayuda?</strong><span>Estamos para ti</span></div>
+        <span class="help-arrow">↗</span>
+      </div>
+      <div class="sidebar-foot"><span class="secure-icon">⌑</span> Tus datos están protegidos</div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="breadcrumb">Plata <span>/</span> {{ page === 'home' ? 'Inicio' : (navigation.find(item => item.id === page)?.label ?? 'Inicio') }}</div>
+      <div class="topbar-actions">
+        <span class="today-label">{{ todayLabel }}</span>
+        <button class="icon-button notification" aria-label="Notificaciones">♧<i></i></button>
+        <button class="avatar avatar-small" aria-label="Perfil de cliente demo">CD</button>
+        <button class="logout-button" type="button" (click)="logout()">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <div class="page-wrap">
+      @if (page === 'home') {
+        <section class="welcome-row">
+          <div><p class="eyebrow">TU DINERO, A TU MANERA</p><h1>¡Hola, {{ customerName.split(' ')[0] }}! <span class="wave">✳</span></h1><p class="subheading">Esto es lo que pasa con tu plata hoy.</p></div>
+          <button class="button button-primary" (click)="goTo('contacts')"><span>↗</span> Enviar dinero</button>
+        </section>
+        <section class="dashboard-grid">
+          <article class="balance-card">
+              <div class="balance-top"><div><span class="balance-label">Saldo disponible</span><span class="balance-amount">{{ walletAmount(walletBalances?.available) }}</span></div><button class="eye-button" aria-label="Ocultar saldo">◉</button></div>
+            <div class="balance-divider"></div>
+            <div class="balance-breakdown">
+              <div><span class="balance-dot dot-white"></span><span>Saldo contable</span><strong>{{ walletAmount(walletBalances?.balance) }}</strong></div>
+              <div><span class="balance-dot dot-orange"></span><span>Saldo reservado</span><strong>{{ walletAmount(walletBalances?.reserved) }}</strong></div>
+            </div>
+            <span class="card-decoration decoration-one"></span><span class="card-decoration decoration-two"></span>
+            <span class="balance-watermark">plata.</span>
+          </article>
+          <article class="promo-card">
+            <span class="promo-spark">✳</span><p class="eyebrow">MÁS SIMPLE, MÁS TUYO</p><h2>Tu plata llega<br>más lejos.</h2><p>Envía dinero a quien quieras,<br>sin complicaciones.</p><button class="text-link" (click)="goTo('contacts')">Probar ahora <span>→</span></button>
+            <span class="promo-orbit orbit-one"></span><span class="promo-orbit orbit-two"></span>
+          </article>
+        </section>
+        <section class="quick-section">
+          <div class="section-heading"><div><h2>¿Qué quieres hacer?</h2><p>Todo lo que necesitas, en un solo lugar.</p></div></div>
+          <div class="quick-grid">
+            <button class="quick-card" (click)="goTo('contacts')"><span class="quick-icon icon-send">↗</span><strong>Enviar dinero</strong><span>A tus contactos</span><i>→</i></button>
+            <button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-qr">▦</span><strong>Pagar con QR</strong><span>Rápido y seguro</span><i>→</i></button>
+            <button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-receive">⌁</span><strong>Recibir dinero</strong><span>Genera tu QR</span><i>→</i></button>
+            <button class="quick-card" (click)="goTo('operations')"><span class="quick-icon icon-history">◷</span><strong>Ver operaciones</strong><span>Tu actividad reciente</span><i>→</i></button>
+          </div>
+        </section>
+        <section class="activity-card">
+          <div class="section-heading activity-heading"><div><h2>Actividad reciente</h2><p>Un vistazo a tus últimos movimientos.</p></div><button class="text-link" (click)="goTo('operations')">Ver todas <span>→</span></button></div>
+          <div class="operation-list">
+            @for (operation of operations.slice(0, 3); track operation.id) {
+              <div class="operation-row">
+                <span class="operation-avatar" [class.incoming]="operation.kind === 'in'">{{ operation.kind === 'in' ? '↓' : '↗' }}</span>
+                <div class="operation-name"><strong>{{ operation.label }}</strong><span>{{ operation.detail }}</span></div>
+                <span class="operation-status" [class.pending]="operation.status === 'Pendiente'" [class.preview-status]="operation.status === 'Vista previa'">{{ operation.status }}</span>
+                <strong class="operation-amount" [class.positive]="operation.kind === 'in'">{{ operation.kind === 'in' ? '+' : '−' }} {{ formatMoney(operation.amount) }}</strong>
+              </div>
+            }
+          </div>
+        </section>
+        <p class="demo-note">Vista previa con información de ejemplo. Los saldos y operaciones no representan movimientos reales.</p>
+      }
+
+      @if (page === 'onboarding') {
+        <section class="welcome-row"><div><p class="eyebrow">EMPIEZA CON PLATA</p><h1>Abre tu wallet</h1><p class="subheading">Verificaremos tu identidad para activar tu cuenta.</p></div><span class="step-pill">PASO 1 DE 1</span></section>
+        <section class="form-layout">
+          <article class="content-card onboarding-card">
+            <div class="form-icon">✳</div><h2>Verifica tu identidad</h2><p class="form-intro">Ten tu DNI a la mano. Usaremos tus datos solo para validar tu registro.</p>
+            <label for="documentType">Tipo de documento</label><div class="select-wrap"><select id="documentType" disabled><option>DNI · Documento Nacional de Identidad</option></select><span>⌄</span></div>
+            <label for="documentNumber">Identificador ficticio</label><input id="documentNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="Escribe 8 dígitos de prueba" [(ngModel)]="documentNumber">
+            <p class="field-help">Usa solo datos de prueba. Se enviará como TEST-{{ documentNumber || 'XXXXXXXX' }}; no ingreses un DNI real.</p>
+            @if (onboardingMessage) { <div class="inline-message" [class.message-error]="onboardingState === 'error'" [class.message-success]="onboardingState === 'success'">{{ onboardingMessage }}</div> }
+            <button class="button button-primary button-wide" [disabled]="onboardingState === 'loading' || onboardingState === 'success' || onboardingState === 'pending'" (click)="registerCustomer()">{{ onboardingState === 'loading' ? 'Registrando…' : (onboardingState === 'success' ? 'Wallet activo ✓' : (onboardingState === 'pending' ? 'Verificación pendiente' : 'Verificar y activar wallet')) }}</button>
+            <p class="secure-caption">⌑ Conexión segura · Tus datos están protegidos</p>
+          </article>
+          <aside class="info-card"><span class="info-spark">✳</span><h3>Tu plata merece<br>estar en buenas manos.</h3><p>Con tu wallet activo puedes enviar, recibir y tener el control de cada movimiento.</p><div class="info-check"><span>✓</span> Sin costo de apertura</div><div class="info-check"><span>✓</span> Siempre disponible</div><div class="info-check"><span>✓</span> Seguro y fácil de usar</div></aside>
+        </section>
+      }
+
+      @if (page === 'contacts') {
+        <section class="welcome-row"><div><p class="eyebrow">PAGOS ENTRE PERSONAS</p><h1>Enviar dinero</h1><p class="subheading">Encuentra a tu contacto y envíale plata al instante.</p></div></section>
+        @if (receipt) {
+          <section class="receipt-card"><div class="receipt-check">✓</div><p class="eyebrow">COMPROBANTE DE DEMOSTRACIÓN</p><h2>¡Listo, {{ receipt.label.split(' ')[0] }}!</h2><p class="receipt-amount">{{ formatMoney(receipt.amount) }}</p><p class="receipt-copy">Esta vista es una demostración. No se realizó ningún movimiento de dinero.</p><div class="receipt-details"><span>Operación</span><strong>{{ receipt.id }}</strong><span>Destino</span><strong>{{ receipt.detail }}</strong><span>Estado de demo</span><strong>Vista previa</strong></div><button class="button button-secondary button-wide" (click)="receipt = null">Hacer otro envío</button></section>
+        } @else {
+          <section class="transfer-layout">
+            <article class="content-card transfer-card">
+              <div class="step-title"><span class="step-number">1</span><div><h2>¿A quién le envías?</h2><p>Busca por nombre o número de celular.</p></div></div>
+              <div class="search-box"><span>⌕</span><input type="search" placeholder="Buscar contacto..." [(ngModel)]="contactQuery" aria-label="Buscar contacto"></div>
+              <div class="contact-list">
+                @for (contact of filteredContacts; track contact.phone) {
+                  <button class="contact-row" [class.contact-selected]="selectedContact?.phone === contact.phone" (click)="selectedContact = contact">
+                    <span class="avatar contact-avatar" [class.lavender]="contact.color === 'lavender'" [class.peach]="contact.color === 'peach'" [class.mint]="contact.color === 'mint'" [class.sky]="contact.color === 'sky'">{{ contact.initials }}</span>
+                    <span class="contact-copy"><strong>{{ contact.name }}</strong><span>+51 {{ contact.phone }}</span></span>
+                    <span class="radio-dot"></span>
+                  </button>
+                } @empty { <p class="empty-message">No encontramos contactos con esa búsqueda.</p> }
+              </div>
+            </article>
+            <article class="content-card amount-card">
+              <div class="step-title"><span class="step-number">2</span><div><h2>¿Cuánto envías?</h2><p>Ingresa el monto en soles.</p></div></div>
+              <label for="paymentAmount">Monto a enviar</label><div class="money-input"><span>S/</span><input id="paymentAmount" type="number" min="0.01" max="500" step="0.01" placeholder="0.00" [(ngModel)]="paymentAmount"></div>
+              <div class="amount-limits"><span>Mínimo S/ 0.01</span><span>Máximo S/ 500.00</span></div>
+              <div class="transfer-summary"><span>Envías a</span><strong>{{ selectedContact?.name ?? 'Selecciona un contacto' }}</strong><span>Comisión</span><strong class="free-label">Gratis</strong></div>
+              @if (showNotice) { <p class="inline-message message-error">{{ notice }}</p> }
+              <button class="button button-primary button-wide" (click)="sendPayment()">Continuar <span>→</span></button>
+              <p class="secure-caption">Tus transferencias están protegidas.</p>
+            </article>
+          </section>
+        }
+      }
+
+      @if (page === 'qr') {
+        <section class="welcome-row"><div><p class="eyebrow">PAGA O RECIBE EN SEGUNDOS</p><h1>Todo con un QR</h1><p class="subheading">Escanea para pagar o crea el tuyo para recibir dinero.</p></div></section>
+        <section class="qr-layout">
+          <article class="content-card qr-card">
+            <div class="qr-card-heading"><span class="quick-icon icon-qr">▦</span><div><h2>Pagar con QR</h2><p>Importa una imagen con el código del comercio.</p></div></div>
+            <label class="upload-zone"><input type="file" accept="image/*" (change)="readQr($event)"><span class="upload-symbol">↑</span><strong>{{ qrLoading ? 'Leyendo código…' : 'Suelta tu imagen aquí o búscala' }}</strong><span>PNG, JPG o WEBP · Solo se procesa en tu navegador</span><span class="button button-secondary">Elegir imagen</span></label>
+            @if (qrState === 'valid' && qrCustomer) { <div class="qr-merchant"><span class="merchant-icon">✓</span><div><strong>{{ qrCustomer }}</strong><span>Comercio identificado en QR de demo</span></div><b>{{ formatAmount(qrPayAmount) }}</b></div> }
+            @if (qrMessage && (qrCustomer || qrState === 'invalid')) { <p class="inline-message" [class.message-error]="qrState === 'invalid'" [class.message-success]="qrState === 'valid'">{{ qrMessage }}</p> }
+            <p class="qr-privacy">⌑ El código se valida localmente. Confirma siempre el comercio y el monto.</p>
+          </article>
+          <article class="content-card qr-card receive-card">
+            <div class="qr-card-heading"><span class="quick-icon icon-receive">⌁</span><div><h2>Recibir dinero</h2><p>Genera un QR con el monto que quieres recibir.</p></div></div>
+            <label for="qrAmount">Monto en soles</label><div class="money-input"><span>S/</span><input id="qrAmount" type="number" min="0.01" max="500" step="0.01" placeholder="0.00" [(ngModel)]="qrAmount"></div>
+            <div class="amount-limits"><span>Mínimo S/ 0.01</span><span>Máximo S/ 500.00</span></div>
+            <button class="button button-primary button-wide" (click)="makeQr()">Generar mi QR <span>→</span></button>
+            @if (qrDataUrl) { <div class="generated-qr"><img [src]="qrDataUrl" alt="Código QR de cobro de demostración"><strong>{{ formatAmount(qrAmount) }}</strong><span>Comparte este QR para solicitar el pago</span></div> }
+            @if (qrMessage && qrState === 'invalid' && !qrCustomer) { <p class="inline-message message-error">{{ qrMessage }}</p> }
+            @if (qrDataUrl) { <p class="demo-warning">QR de demostración: no está conectado a un servicio de pagos.</p> }
+          </article>
+        </section>
+        <p class="demo-note">La lectura y generación de QR usan el formato local de demostración de Plata. No procesan pagos reales.</p>
+      }
+
+      @if (page === 'wallet') {
+        <section class="welcome-row"><div><p class="eyebrow">TU CUENTA PLATA</p><h1>Mi wallet</h1><p class="subheading">El estado de tu cuenta y tus saldos, siempre a la vista.</p></div><span class="active-pill"><i class="status-dot"></i> Wallet {{ walletActive ? 'activo' : 'inactivo' }}</span></section>
+        <section class="wallet-summary">
+          <article class="content-card wallet-balance"><span class="balance-label">Saldo disponible</span><strong>{{ walletAmount(walletBalances?.available) }}</strong><p>Lo que puedes usar ahora</p><span class="wallet-pattern">plata.</span></article>
+          <article class="content-card metric-card"><span class="metric-icon">◉</span><span class="balance-label">Saldo contable</span><strong>{{ walletAmount(walletBalances?.balance) }}</strong><p>Saldo total de tu cuenta</p></article>
+          <article class="content-card metric-card"><span class="metric-icon reserved-icon">◷</span><span class="balance-label">Saldo reservado</span><strong>{{ walletAmount(walletBalances?.reserved) }}</strong><p>En operaciones pendientes</p></article>
+        </section>
+        @if (walletApiMessage) { <p class="inline-message message-error">{{ walletApiMessage }}</p> }
+        <section class="content-card account-detail"><div><span class="detail-icon">✓</span><div><strong>Tu wallet está {{ walletActive ? 'activo' : 'inactivo' }}</strong><p>Puedes enviar y recibir dinero desde tu cuenta.</p></div></div><span class="account-demo">Información de ejemplo</span></section>
+        <p class="demo-note">Saldos consultados al backend local y expresados en PEN.</p>
+      }
+
+      @if (page === 'operations') {
+        <section class="welcome-row"><div><p class="eyebrow">TODO BAJO CONTROL</p><h1>Tus operaciones</h1><p class="subheading">Consulta el estado y los detalles de tus movimientos.</p></div></section>
+        <section class="content-card operations-card">
+          <div class="operations-toolbar"><div><h2>Historial de operaciones</h2><p>{{ filteredOperations.length }} movimientos encontrados</p></div><div class="search-box operation-search"><span>⌕</span><input type="search" placeholder="Buscar por operación..." [(ngModel)]="searchedOperation" aria-label="Buscar operación"></div></div>
+          <div class="table-head"><span>OPERACIÓN</span><span>ESTADO</span><span>MONTO</span><span>DETALLE</span></div>
+          @for (operation of filteredOperations; track operation.id) {
+            <button class="table-row" [class.row-expanded]="selectedOperation?.id === operation.id" (click)="selectOperation(operation)">
+              <span class="table-operation"><i [class.incoming]="operation.kind === 'in'">{{ operation.kind === 'in' ? '↓' : '↗' }}</i><span><strong>{{ operation.label }}</strong><small>{{ operation.id }}</small></span></span>
+              <span><i class="table-status" [class.pending]="operation.status === 'Pendiente'"></i>{{ operation.status }}</span>
+              <strong class="table-money" [class.positive]="operation.kind === 'in'">{{ operation.kind === 'in' ? '+' : '−' }} {{ formatMoney(operation.amount) }}</strong>
+              <span class="table-detail">{{ operation.detail }}</span>
+              @if (selectedOperation?.id === operation.id) { <span class="operation-expanded"><b>Recepción:</b> {{ operation.kind === 'in' ? 'Abono de ejemplo recibido' : 'Sin recepción asociada en esta vista de demostración' }}<b>Fecha:</b> {{ operation.date }}</span> }
+            </button>
+          } @empty { <p class="empty-message operations-empty">No encontramos operaciones con esa búsqueda.</p> }
+        </section>
+        <p class="demo-note">Historial de ejemplo. Consulta el backend para conocer operaciones reales.</p>
+      }
+    </div>
+  </main>
+</div>
+} @else {
+<div class="auth-shell">
+  <section class="auth-story">
+    <a class="brand auth-brand" href="#" (click)="$event.preventDefault()">
+      <span class="brand-symbol"><span></span><span></span></span>
+      <span>plata<span class="brand-period">.</span></span>
+    </a>
+    <div class="auth-story-copy">
+      <p class="eyebrow">TU PLATA, EN MOVIMIENTO</p>
+      <h1>Todo lo que necesitas.<br>En un solo lugar.</h1>
+      <p>Envía, recibe y mantén el control de tu dinero desde tu wallet.</p>
+    </div>
+    <div class="auth-story-art" aria-hidden="true">
+      <div class="art-card"><span>Saldo disponible</span><strong>S/ 2,450.80</strong><i>↗</i></div>
+      <span class="art-circle circle-a"></span><span class="art-circle circle-b"></span>
+      <span class="art-spark">✳</span>
+    </div>
+    <p class="auth-story-foot">Simple para ti. Seguro en cada paso.</p>
+  </section>
+  <main class="auth-main">
+    <div class="auth-mobile-brand">
+      <a class="brand auth-brand" href="#" (click)="$event.preventDefault()">
+        <span class="brand-symbol"><span></span><span></span></span>
+        <span>plata<span class="brand-period">.</span></span>
+      </a>
+    </div>
+    @if (authMode === 'login') {
+      <section class="auth-card">
+        <p class="eyebrow">QUÉ BUENO VERTE</p>
+        <h2>Ingresa a tu wallet</h2>
+        <p class="auth-description">Ingresa con el DNI de tu wallet.</p>
+        <form (ngSubmit)="attemptLogin()">
+          <label for="loginDocument">Tipo de identificador</label>
+          <div class="select-wrap"><select id="loginDocument" disabled><option>DNI · Documento Nacional de Identidad</option></select><span>⌄</span></div>
+          <label for="loginDocumentNumber">Identificador ficticio</label>
+          <input id="loginDocumentNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="Escribe los 8 dígitos de prueba" [(ngModel)]="loginDocumentNumber" name="loginDocumentNumber">
+          @if (loginMessage) { <p class="inline-message" role="alert" [class.message-error]="loginMessageType === 'error'" [class.message-info]="loginMessageType === 'info'">{{ loginMessage }}</p> }
+          <button class="button button-primary button-wide" type="submit" [disabled]="loginLoading">{{ loginLoading ? 'Verificando…' : 'Ingresar' }} <span>→</span></button>
+        </form>
+        <p class="demo-login-hint">Usa el identificador de prueba con el que creaste tu wallet.</p>
+        <div class="auth-separator"><span>¿Aún no tienes wallet?</span></div>
+        <button class="button button-secondary button-wide register-link" (click)="showRegistration()">Crear mi wallet</button>
+        <p class="secure-caption">⌑ Tus datos están protegidos</p>
+      </section>
+    } @else {
+      <section class="auth-card">
+        <button class="back-link" (click)="showLogin()">← Volver a ingresar</button>
+        <p class="eyebrow">EMPIEZA CON PLATA</p>
+        <h2>Abre tu wallet</h2>
+        <p class="auth-description">Crea un wallet de demostración con un DNI ficticio de 8 dígitos.</p>
+        <label for="documentType">Tipo de documento</label>
+        <div class="select-wrap"><select id="documentType" disabled><option>DNI · Documento Nacional de Identidad</option></select><span>⌄</span></div>
+        <label for="documentNumber">Identificador ficticio</label>
+        <input id="documentNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="Escribe 8 dígitos de prueba" [(ngModel)]="documentNumber">
+        <p class="field-help">Usa solo datos de prueba. Se enviará como TEST-{{ documentNumber || 'XXXXXXXX' }}; no ingreses un DNI real.</p>
+        @if (onboardingMessage) { <div class="inline-message" role="alert" [class.message-error]="onboardingState === 'error'" [class.message-success]="onboardingState === 'success'">{{ onboardingMessage }}</div> }
+        @if (onboardingState === 'success') {
+          <button class="button button-primary button-wide" (click)="enterRegisteredDemoWallet()">Entrar a mi wallet <span>→</span></button>
+        } @else {
+          <button class="button button-primary button-wide" [disabled]="onboardingState === 'loading' || onboardingState === 'pending'" (click)="registerCustomer()">{{ onboardingState === 'loading' ? 'Registrando…' : (onboardingState === 'pending' ? 'Verificación pendiente' : 'Crear wallet de demo') }}</button>
+        }
+        <p class="secure-caption">⌑ Demo local · No se envían ni guardan datos personales</p>
+        <p class="auth-api-note">No ingreses un DNI real. La sesión guarda identificadores temporales de prueba.</p>
+      </section>
+    }
+    <p class="auth-footer">Plata · Tu dinero, a tu manera</p>
+  </main>
+</div>
+}

@@ -40,6 +40,10 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
+    @app.get("/health")
+    def health():
+        return jsonify(status="ok")
+
     @app.post("/crear-wallet")
     def crear_wallet():
         upstream_request = Request(
@@ -116,4 +120,7 @@ def create_app(test_config=None):
 
 
 if __name__ == "__main__":
-    create_app().run()
+    create_app().run(
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "5000")),
+    )

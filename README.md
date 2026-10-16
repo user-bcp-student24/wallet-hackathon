@@ -11,7 +11,7 @@ Una persona debe poder completar un pago de bajo monto y entender inmediatamente
 - **Backend:** Python con Flask.
 - **Persistencia:** PostgreSQL.
 - **Mensajeria:** RabbitMQ y Kafka, con Zookeeper para la coordinacion de Kafka.
-- **Frontend:** React.
+- **Frontend:** Angular 21, TypeScript 5.9 y CSS propio.
 - **Contenedores:** Docker y Docker Compose.
 
 El stack queda registrado como contexto del proyecto. Las versiones, responsabilidades concretas de cada broker y configuraciones de servicios siguen pendientes de definicion.
@@ -31,8 +31,8 @@ El detalle original de estas epicas esta en [docs/epics.md](./docs/epics.md).
 
 ```text
 wallet-db        PostgreSQL en localhost:5432
-wallet-services  Flask en localhost:5000; GET /health verifica PostgreSQL
-wallet-front     React/Vite en localhost:5173
+wallet-services  Flask en localhost:5000; GET /health verifica el middleware
+wallet-front     Angular servido por Nginx en localhost:5173
 ```
 
 Copiar `.env.example` a `.env` y cambiar la contrasena local antes de iniciar. La contrasena de respaldo definida en Compose es solo para desarrollo local.
@@ -41,12 +41,14 @@ Con Podman, desde la carpeta `wallet-hackathon`:
 
 ```powershell
 podman machine start
-podman compose up -d
+podman-compose up -d
 ```
 
-El inicio predeterminado levanta solo `wallet-db`. Para iniciar tambien Flask y React, ejecuta `podman compose --profile app up --build -d`.
+El inicio predeterminado levanta solo `wallet-db`. Para iniciar Flask y Angular, ejecuta `podman-compose --profile app up --build -d`.
 
-`podman compose` requiere que haya un proveedor Compose instalado, como `podman-compose` o `docker-compose`.
+El middleware actual reenvia solicitudes al mock externo. PostgreSQL esta disponible en Compose, pero Flask aun no se conecta a esa base.
+
+El comando directo `podman-compose` debe estar instalado para usar los comandos anteriores.
 
 ## Modelo de base de datos
 
