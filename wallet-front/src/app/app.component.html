@@ -73,9 +73,9 @@
           <div class="section-heading"><div><h2>¿Qué quieres hacer?</h2><p>Todo lo que necesitas, en un solo lugar.</p></div></div>
           <div class="quick-grid">
             <button class="quick-card" (click)="goTo('contacts')"><span class="quick-icon icon-send">↗</span><strong>Enviar dinero</strong><span>A tus contactos</span><i>→</i></button>
-            <button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-qr">▦</span><strong>Pagar con QR</strong><span>Rápido y seguro</span><i>→</i></button>
-            <button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-receive">⌁</span><strong>Recibir dinero</strong><span>Genera tu QR</span><i>→</i></button>
-            <button class="quick-card" (click)="goTo('operations')"><span class="quick-icon icon-history">◷</span><strong>Ver operaciones</strong><span>Tu actividad reciente</span><i>→</i></button>
+            <!--<button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-qr">▦</span><strong>Pagar con QR</strong><span>Rápido y seguro</span><i>→</i></button>-->
+            <!--<button class="quick-card" (click)="goTo('qr')"><span class="quick-icon icon-receive">⌁</span><strong>Recibir dinero</strong><span>Genera tu QR</span><i>→</i></button>-->
+            <button class="quick-card" (click)="goTo('operations')"><span class="quick-icon icon-history">◷</span><strong>Ver operaciones</strong><span>Tu actividad reciente</span><i>→</i></button>-->
           </div>
         </section>
         <section class="activity-card">
@@ -145,7 +145,7 @@
       @if (page === 'qr') {
         <section class="welcome-row"><div><p class="eyebrow">PAGA O RECIBE EN SEGUNDOS</p><h1>Todo con un QR</h1><p class="subheading">Escanea para pagar o crea el tuyo para recibir dinero.</p></div></section>
         <section class="qr-layout">
-          <article class="content-card qr-card">
+          <!--<article class="content-card qr-card">
             <div class="qr-card-heading"><span class="quick-icon icon-qr">▦</span><div><h2>Pagar con QR</h2><p>Importa una imagen con el código del comercio.</p></div></div>
             <label class="upload-zone"><input type="file" accept="image/*" (change)="readQr($event)"><span class="upload-symbol">↑</span><strong>{{ qrLoading ? 'Leyendo código…' : 'Suelta tu imagen aquí o búscala' }}</strong><span>PNG, JPG o WEBP · Solo se procesa en tu navegador</span><span class="button button-secondary">Elegir imagen</span></label>
             @if (qrState === 'valid' && qrCustomer) { <div class="qr-merchant"><span class="merchant-icon">✓</span><div><strong>{{ qrCustomer }}</strong><span>Comercio identificado en QR de demo</span></div><b>{{ formatAmount(qrPayAmount) }}</b></div> }
@@ -160,7 +160,7 @@
             @if (qrDataUrl) { <div class="generated-qr"><img [src]="qrDataUrl" alt="Código QR de cobro de demostración"><strong>{{ formatAmount(qrAmount) }}</strong><span>Comparte este QR para solicitar el pago</span></div> }
             @if (qrMessage && qrState === 'invalid' && !qrCustomer) { <p class="inline-message message-error">{{ qrMessage }}</p> }
             @if (qrDataUrl) { <p class="demo-warning">QR de demostración: no está conectado a un servicio de pagos.</p> }
-          </article>
+          </article>-->
         </section>
         <p class="demo-note">La lectura y generación de QR usan el formato local de demostración de Plata. No procesan pagos reales.</p>
       }
